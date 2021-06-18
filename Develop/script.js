@@ -1,84 +1,86 @@
-// Assignment code here
+//Define password parameter functions
+function askLength () {
+  return prompt("What is your desired password length? Please enter a number between 8 and 128.")
+}
+function askUpper() {
+  return window.confirm("Would you like to include uppercase letters?");
+}
+function askLower() {
+  return window.confirm("Would you like to include lowercase letters?");
+}
+function askNumerics() {
+  return window.confirm("Would you like to include numbers?");
+}
+function askSpecials() {
+  return window.confirm("Would you like to include special characters?");
+}
 
-//First get desired length
-const getLength = function() {
-  
-  length = prompt("What is your desired password length? Please enter a number between 8 and 128.");
-  
-  
-  if (parseInt(length)>= 8 && parseInt(length)<= 128) {
-    window.alert("Your password length is " + length);
-  return parseInt(length);
-   } else {
-  
-    window.alert("Please enter a number between 8 and 128!")
-  
-    getLength();
+
+//Define character bank
+function buildBank(wantUpper, wantLower, wantSpecial, wantNumeric) {
+  const uppers = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const lowers = 'abcdefghijklmnopqrstuvwxyz';
+  const numerics = '1234567890';
+  const specials = '!@#$%^&*()",+-.?/<>{}|~`';
+  let availableCharacters = ''
+  if (wantUpper) {
+    availableCharacters += uppers
   }
-}
-getLength();
-
-
-//Determine which characters to include
-const confirmUppercase = function() {
-  uppercase = window.confirm("Would you like to include uppercase letters?");
-}
-confirmUppercase();
-const confirmLowercase = function() {
-  lowercase = window.confirm("Would you like to include lowercase letters?");
-}
-confirmLowercase();
-const confirmNumbers = function() {
-  numbers = window.confirm("Would you like to include numbers?");
-}
-confirmNumbers();
-const confirmSymbols = function() {
-  symbols = window.confirm("Would you like to include special characters?");
-}
-confirmSymbols();
-const UPPERCASE = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
-const LOWERCASE = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
-const NUMBER = ['1','2', '3', '4', '5', '6', '7', '8', '9'];
-const SYMBOL = [' ', '!', '"', '#', '$',' %', '&', "'", '(',' )', '*', '+', ',', '-', '.', '/', ':', ';', '<', '=', '>', '?', '@', '\\', '^','_', '`', '{', '|', '}', '~']
-
-
-
-//Construct character set based on responses
-const unCharacters = [
-  uppercase ? [UPPERCASE] : null,
-  lowercase ? [LOWERCASE] : null,
-  numbers ? [NUMBER] : null,
-  symbols ? [SYMBOL] : null,
-] .filter(Boolean);
-
-
-//Flatten array so that the resulting array contains only strings and is not an array of arrays.
-const characters = unCharacters.flat(Infinity)
-console.log(characters);
-console.log(length);
-
-
-//Make sure at least one character set is selected
-while (characters===null) {
-  window.alert("You need to select at least one character set to include in the password!")
-
-  confirmUppercase();
-  confirmLowercase();
-  confirmNumbers();
-  confirmSymbols();
+  if (wantLower) {
+    availableCharacters += lowers
+  }
+  if (wantSpecial) {
+    availableCharacters += specials
+  }
+  if (wantNumeric) {
+    availableCharacters += numerics
+  }
+  return availableCharacters;
 }
 
-//Loop over random selector to get password
-const generatePassword = function() {
-  let newPassword = "";
-  for (let i = 0; i < length; i++) {
-    newPassword += characters[
-      Math.floor(Math.random() * characters.length)
-    ];
+
+//
+function generatePassword () {
+  // length
+  const desiredPasswordLength = askLength();
+    // if not between 8-128
+    if (parseInt(desiredPasswordLength) < 8 || parseInt(desiredPasswordLength) > 128) {
+      // do again
+      alert('length needs to be between 8-128');
+      generatePassword();
     }
-  return newPassword;
-};
-generatePassword();
+    // else between--continue
+    else {
+      //4 character questions
+      const wantUpper = askUpper();
+      const wantLower = askLower();
+      const wantNumeric = askNumerics();
+      const wantSpecial =  askSpecials();
+        // if all no
+        if (!wantUpper && !wantLower && !wantNumeric && !wantSpecial) {
+          // do again warn too
+          alert('you need to choose at least one character set')
+          generatePassword()
+        }
+        // else at least 1 chosen
+        else {
+          // actually generate
+          let generatedPassword = '';
+          // build available character bank
+          let availableCharacters = buildBank(wantUpper, wantLower,wantSpecial,wantNumeric);
+          //it is built
+          for (let i = 0; i < parseInt(desiredPasswordLength); i++) {
+            let randomIndex = Math.floor(Math.random()*availableCharacters.length);
+            console.log('randomIndex on loop ' + i, randomIndex)
+            console.log('randomCharacter then is ' + availableCharacters[randomIndex]);
+            generatedPassword += availableCharacters[randomIndex];
+          }
+
+          return generatedPassword;
+        }
+
+    }
+}
 
 // Get references to the #generate element
 var generateBtn = document.querySelector("#generate");
@@ -91,7 +93,7 @@ function writePassword() {
   passwordText.value = password;
 
 }
-writePassword();
+
 
 // Add event listener to generate button
 generateBtn.addEventListener("click", writePassword);
